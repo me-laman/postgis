@@ -1,2 +1,8 @@
+from aiohttp import web
+from post_gis.views import index
+
+
 def setup_routes(app):
-    pass
+    app.router.add_get('/', index)
+
+

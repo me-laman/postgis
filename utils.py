@@ -1,4 +1,11 @@
 import trafaret as T
+import datetime
+
+
+def alchemy_encoder(obj):
+    """JSON encoder function for SQLAlchemy special classes."""
+    if isinstance(obj, datetime.date):
+        return obj.isoformat()
 
 
 TRAFARET = T.Dict({

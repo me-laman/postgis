@@ -1,4 +1,5 @@
 import pytest
+from aiohttp.pytest_plugin import aiohttp_client, loop
 from main import init_app
 from settings import BASE_DIR, get_config
 from init_db import (
@@ -12,9 +13,9 @@ TEST_CONFIG_PATH = BASE_DIR / 'configs' / 'config_test.yaml'
 
 
 @pytest.fixture
-async def cli(loop, test_client, db):
+async def cli(loop, aiohttp_client, db):
     app = await init_app(['-c', TEST_CONFIG_PATH.as_posix()])
-    return await test_client(app)
+    return await aiohttp_client(app)
 
 
 @pytest.fixture(scope='module')

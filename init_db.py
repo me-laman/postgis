@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, MetaData
 
-from post_gis.db import gis_polygon
+from post_gis.db import GisPolygon
 from settings import BASE_DIR, get_config
 
 
@@ -39,9 +39,9 @@ def setup_db(config):
                  (db_name, db_user))
     conn.close()
 
-    conn = user_engine.connect()
-    conn.execute("CREATE EXTENSION postgis")
-    conn.execute("CREATE EXTENSION postgis_topology")
+    conn = test_engine.connect()
+    conn.execute("CREATE EXTENSION IF NOT EXISTS postgis")
+    conn.execute("CREATE EXTENSION IF NOT EXISTS postgis_topology")
     conn.close()
 
 
@@ -57,18 +57,18 @@ def teardown_db(config):
       WHERE pg_stat_activity.datname = '%s'
         AND pid <> pg_backend_pid();""" % db_name)
     conn.execute("DROP DATABASE IF EXISTS %s" % db_name)
-    conn.execute("DROP ROLE IF EXISTS %s" % db_user)
+    # conn.execute("DROP ROLE IF EXISTS %s" % db_user)
     conn.close()
 
 
 def create_tables(engine=test_engine):
     meta = MetaData()
-    meta.create_all(bind=engine, tables=[gis_polygon])
+    meta.create_all(bind=engine, tables=[GisPolygon.__table__])
 
 
 def drop_tables(engine=test_engine):
     meta = MetaData()
-    meta.drop_all(bind=engine, tables=[gis_polygon])
+    meta.drop_all(bind=engine, tables=[GisPolygon.__table__])
 
 
 if __name__ == '__main__':

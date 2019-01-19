@@ -1,7 +1,7 @@
 postgres:
   database: postgis_test
-  user: gis
-  password: gis
+  user: gis_test
+  password: gis_test
   host: localhost
   port: 5432
   minsize: 1
