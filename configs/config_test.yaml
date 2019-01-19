@@ -1,5 +1,5 @@
 postgres:
-  database: postgis_db
+  database: postgis_test
   user: gis
   password: gis
   host: localhost

@@ -6,8 +6,8 @@ from trafaret_config import commandline
 from utils import TRAFARET
 
 
-BASE_DIR = pathlib.Path(__file__).parent.parent
-DEFAULT_CONFIG_PATH = BASE_DIR / 'config' / 'config.yaml'
+BASE_DIR = pathlib.Path(__file__).parent
+DEFAULT_CONFIG_PATH = BASE_DIR / 'configs' / 'config.yaml'
 
 
 def get_config(argv=None):
