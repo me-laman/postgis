@@ -1,4 +1,7 @@
 import aiopg.sa
+import sqlalchemy as sa
+from geoalchemy2 import functions
+
 from sqlalchemy import (
     MetaData, Table, Column,
     Integer, String, DateTime, JSON
@@ -19,6 +22,19 @@ gis_polygon = Table(
     Column('props', JSON),
     Column('geom', Geometry('POLYGON', srid=4326)),
 )
+
+
+async def get_all(connection):
+    query = sa.select([gis_polygon.c.id,
+                       gis_polygon.c.name,
+                       gis_polygon.c._created,
+                       gis_polygon.c._updated,
+                       gis_polygon.c.class_id,
+                       gis_polygon.c.props,
+                       functions.ST_AsText(gis_polygon.c.geom).label('geom')])
+    result = await connection.execute(query)
+    records = await result.fetchall()
+    return records
 
 
 class RecordNotFound(Exception):
