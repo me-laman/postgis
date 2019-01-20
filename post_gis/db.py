@@ -23,17 +23,27 @@ gis_polygon = Table(
     Column('geom', Geometry('POLYGON', srid=4326)),
 )
 
-
-async def get_all(connection):
-    query = sa.select([gis_polygon.c.id,
+base_query = sa.select([gis_polygon.c.id,
                        gis_polygon.c.name,
                        gis_polygon.c._created,
                        gis_polygon.c._updated,
                        gis_polygon.c.class_id,
                        gis_polygon.c.props,
                        functions.ST_AsText(gis_polygon.c.geom).label('geom')])
-    result = await connection.execute(query)
+
+
+async def get_all(connection):
+
+    result = await connection.execute(base_query)
     records = await result.fetchall()
+    return records
+
+
+async def get_record(connection, record_id):
+    query = base_query.where(gis_polygon.c.id == record_id)
+
+    result = await connection.execute(query)
+    records = await result.first()
     return records
 
 
