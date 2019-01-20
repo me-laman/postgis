@@ -79,7 +79,13 @@ def sample_data(engine=test_engine):
          'class_id': 1,
          'name': 'sample name',
          'props': {"one": 1, "two": 2},
-         'geom': 'SRID=4326;POLYGON((0 0,1 0,1 1,0 1,0 0))'}
+         'geom': 'SRID=4326;POLYGON((0 0,1 0,1 1,0 1,0 0))'},
+        {'_created': '2019-01-19 17:20:49.629',
+         '_updated': '2019-01-19 17:20:49.629',
+         'class_id': 2,
+         'name': 'sample name 2',
+         'props': {"three": 3, "four": 4},
+         'geom': 'SRID=4326;POLYGON((0 0,2 0,2 2,0 2,0 0))'}
     ])
 
     conn.close()
