@@ -1,5 +1,6 @@
 import trafaret as T
 import datetime
+from geoalchemy2 import functions
 
 
 def alchemy_encoder(obj):

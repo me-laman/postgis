@@ -6,7 +6,8 @@ from init_db import (
     setup_db,
     teardown_db,
     create_tables,
-    drop_tables
+    drop_tables,
+    sample_data
 )
 
 TEST_CONFIG_PATH = BASE_DIR / 'configs' / 'config_test.yaml'
@@ -30,5 +31,13 @@ def db():
 @pytest.fixture
 def tables_and_data():
     create_tables()
+    yield
+    drop_tables()
+
+
+@pytest.fixture
+def sample_data_fixture():
+    create_tables()
+    sample_data()
     yield
     drop_tables()

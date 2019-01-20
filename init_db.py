@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, MetaData
 
-from post_gis.db import GisPolygon
+from post_gis.db import gis_polygon
 from settings import BASE_DIR, get_config
 
 
@@ -63,12 +63,26 @@ def teardown_db(config):
 
 def create_tables(engine=test_engine):
     meta = MetaData()
-    meta.create_all(bind=engine, tables=[GisPolygon.__table__])
+    meta.create_all(bind=engine, tables=[gis_polygon])
 
 
 def drop_tables(engine=test_engine):
     meta = MetaData()
-    meta.drop_all(bind=engine, tables=[GisPolygon.__table__])
+    meta.drop_all(bind=engine, tables=[gis_polygon])
+
+
+def sample_data(engine=test_engine):
+    conn = engine.connect()
+    conn.execute(gis_polygon.insert(), [
+        {'_created': '2019-01-19 17:17:49.629',
+         '_updated': '2019-01-19 17:17:49.629',
+         'class_id': 1,
+         'name': 'sample name',
+         'props': {"one": 1, "two": 2},
+         'geom': 'SRID=4326;POLYGON((0 0,1 0,1 1,0 1,0 0))'}
+    ])
+
+    conn.close()
 
 
 if __name__ == '__main__':

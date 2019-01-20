@@ -3,23 +3,22 @@ from sqlalchemy import (
     MetaData, Table, Column,
     Integer, String, DateTime, JSON
 )
-from sqlalchemy.ext.declarative import declarative_base
 from geoalchemy2 import Geometry
 
 
-Base = declarative_base()
+meta = MetaData()
 
+gis_polygon = Table(
+    'gis_polygon', meta,
 
-class GisPolygon(Base):
-    __tablename__ = 'gis_polygon'
-
-    _created = Column('_created', DateTime(timezone=False))
-    _updated = Column('_updated', DateTime(timezone=False))
-    id = Column('id', Integer, primary_key=True, autoincrement=True, nullable=False)
-    class_id = Column('class_id', Integer)
-    name = Column('name', String)
-    props = Column('props', JSON)
-    geom = Column('geom', Geometry('POLYGON', srid=4326))
+    Column('_created', DateTime(timezone=False)),
+    Column('_updated', DateTime(timezone=False)),
+    Column('id', Integer, primary_key=True, autoincrement=True, nullable=False),
+    Column('class_id', Integer),
+    Column('name', String),
+    Column('props', JSON),
+    Column('geom', Geometry('POLYGON', srid=4326)),
+)
 
 
 class RecordNotFound(Exception):
