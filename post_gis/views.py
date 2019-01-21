@@ -1,5 +1,7 @@
 import json
 from aiohttp import web
+
+from post_gis.views_helpers import build_data
 from utils import alchemy_encoder
 from post_gis.db import get_all, get_record, add_record, delete_record, update_record, RecordNotFound
 
@@ -89,29 +91,6 @@ async def update_record_view(request: web.Request) -> web.Response:
         text=json.dumps(dict(result),
                         default=alchemy_encoder),
         content_type=headers)
-
-
-async def build_data(req_data):
-    data = dict()
-    props = req_data.get('props')
-    name = req_data.get('name')
-    class_id = req_data.get('class_id')
-    geom = req_data.get('geom')
-    try:
-        if class_id:
-            data.update({"class_id": int(class_id)})
-        if name:
-            data.update({"name": name})
-        if props:
-            data.update({"props": dict(props)})
-        if geom:
-            data.update({"geom": geom})
-
-    except (KeyError, TypeError, ValueError) as e:
-        raise web.HTTPBadRequest(
-            text='You have not specified {} value'.format(e)) from e
-    else:
-        return data
 
 
 async def delete_record_view(request: web.Request) -> web.Response:
