@@ -38,6 +38,6 @@ def tables_and_data():
 @pytest.fixture
 def sample_data_fixture():
     create_tables()
-    sample_data()
-    yield
+    sample = sample_data()
+    yield sample
     drop_tables()

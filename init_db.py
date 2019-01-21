@@ -72,8 +72,7 @@ def drop_tables(engine=test_engine):
 
 
 def sample_data(engine=test_engine):
-    conn = engine.connect()
-    conn.execute(gis_polygon.insert(), [
+    sdata = [
         {'_created': '2019-01-19 17:17:49.629',
          '_updated': '2019-01-19 17:17:49.629',
          'class_id': 1,
@@ -86,9 +85,12 @@ def sample_data(engine=test_engine):
          'name': 'sample name 2',
          'props': {"three": 3, "four": 4},
          'geom': 'SRID=4326;POLYGON((0 0,2 0,2 2,0 2,0 0))'}
-    ])
-
+    ]
+    conn = engine.connect()
+    conn.execute(gis_polygon.insert(), sdata)
     conn.close()
+
+    return sdata
 
 
 if __name__ == '__main__':

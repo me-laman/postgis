@@ -1,5 +1,5 @@
 import json
-from post_gis.db import base_query
+from post_gis.db import base_query, gis_polygon
 
 
 async def test_index(cli, tables_and_data):
@@ -137,3 +137,37 @@ async def test_index_delete_not_existing_record(cli, sample_data_fixture):
         result = await conn.execute(base_query)
         records = await result.fetchall()
     assert len(records) == 2
+
+
+async def test_index_update_record_class_id(cli, sample_data_fixture):
+    id = 1
+    class_id = 100
+    response = await cli.put(f'/polygon/{id}',
+                             json={
+                                 "class_id": class_id,
+                             })
+    assert response.status == 200
+
+    async with cli.server.app['db'].acquire() as conn:
+        result = await conn.execute(base_query.where(gis_polygon.c.id == id))
+        records = await result.fetchone()
+
+    assert records['class_id'] == class_id
+    # new updated data
+    assert sample_data_fixture[0]['_updated'] != records['_updated']
+
+
+async def test_index_update_record_props(cli, sample_data_fixture):
+    id = 1
+    props = {'props_key': 'new props value'}
+
+    response = await cli.put(f'/polygon/{id}',
+                             json={
+                                 "props": props,
+                             })
+    assert response.status == 200
+
+    async with cli.server.app['db'].acquire() as conn:
+        result = await conn.execute(base_query.where(gis_polygon.c.id == id))
+        records = await result.fetchone()
+    assert records['props'] == props

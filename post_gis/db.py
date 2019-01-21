@@ -1,5 +1,8 @@
+from typing import Dict
 import aiopg.sa
 import sqlalchemy as sa
+from sqlalchemy.engine import RowProxy
+from aiopg.sa import SAConnection
 from sqlalchemy.sql import func
 from geoalchemy2 import functions
 
@@ -33,14 +36,14 @@ base_query = sa.select([gis_polygon.c.id,
                        functions.ST_AsText(gis_polygon.c.geom).label('geom')])
 
 
-async def get_all(connection):
+async def get_all(connection: SAConnection) -> RowProxy:
 
     result = await connection.execute(base_query)
     records = await result.fetchall()
     return records
 
 
-async def get_record(connection, record_id):
+async def get_record(connection: SAConnection, record_id: int) -> RowProxy:
     query = base_query.where(gis_polygon.c.id == record_id)
 
     result = await connection.execute(query)
@@ -48,7 +51,7 @@ async def get_record(connection, record_id):
     return records
 
 
-async def delete_record(connection, record_id):
+async def delete_record(connection: SAConnection, record_id: int) -> RowProxy:
     query = sa.delete(gis_polygon).where(gis_polygon.c.id == int(record_id))
     result = await connection.execute(query)
     if result.rowcount == 0:
@@ -57,11 +60,11 @@ async def delete_record(connection, record_id):
     return result
 
 
-async def add_record(connection,
-                     class_id,
-                     name,
-                     props,
-                     geom):
+async def add_record(connection: SAConnection,
+                     class_id: int,
+                     name: str,
+                     props: Dict,
+                     geom: str):
 
     result = await connection.execute(
         gis_polygon.insert().values(
@@ -76,6 +79,19 @@ async def add_record(connection,
         msg = "Record not inserted"
         raise RecordNotFound(msg)
     return record
+
+
+async def update_record(connection: SAConnection,
+                        record_id: int,
+                        data):
+
+    result = await connection.execute(
+        gis_polygon.update().where(
+            gis_polygon.c.id == int(record_id)).values(data))
+    if result.rowcount == 0:
+        msg = "Record with id {} not found".format(record_id)
+        raise RecordNotFound(msg)
+    return result
 
 
 class RecordNotFound(Exception):
