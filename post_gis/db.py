@@ -1,5 +1,6 @@
 import aiopg.sa
 import sqlalchemy as sa
+from sqlalchemy.sql import func
 from geoalchemy2 import functions
 
 from sqlalchemy import (
@@ -14,8 +15,8 @@ meta = MetaData()
 gis_polygon = Table(
     'gis_polygon', meta,
 
-    Column('_created', DateTime(timezone=False)),
-    Column('_updated', DateTime(timezone=False)),
+    Column('_created', DateTime(timezone=False), server_default=func.now()),
+    Column('_updated', DateTime(timezone=False), onupdate=func.now()),
     Column('id', Integer, primary_key=True, autoincrement=True, nullable=False),
     Column('class_id', Integer),
     Column('name', String),
@@ -45,6 +46,27 @@ async def get_record(connection, record_id):
     result = await connection.execute(query)
     records = await result.first()
     return records
+
+
+async def add_record(connection,
+                     class_id,
+                     name,
+                     props,
+                     geom):
+
+    result = await connection.execute(
+        gis_polygon.insert().values(
+            class_id=class_id,
+            name=name,
+            props=props,
+            geom=geom)
+    )
+
+    record = await result.fetchone()
+    if not record:
+        msg = "Record not inserted"
+        raise RecordNotFound(msg)
+    return record
 
 
 class RecordNotFound(Exception):
