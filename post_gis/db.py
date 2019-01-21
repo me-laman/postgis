@@ -48,6 +48,15 @@ async def get_record(connection, record_id):
     return records
 
 
+async def delete_record(connection, record_id):
+    query = sa.delete(gis_polygon).where(gis_polygon.c.id == int(record_id))
+    result = await connection.execute(query)
+    if result.rowcount == 0:
+        msg = "Record with id {} not found".format(record_id)
+        raise RecordNotFound(msg)
+    return result
+
+
 async def add_record(connection,
                      class_id,
                      name,
