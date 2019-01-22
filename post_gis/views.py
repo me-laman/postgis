@@ -1,9 +1,9 @@
 import json
 from aiohttp import web
 
-from post_gis.views_helpers import build_data
-from utils import alchemy_encoder
 from post_gis.db import get_all, get_record, add_record, delete_record, update_record, RecordNotFound
+from post_gis.views_helpers import build_update_data, build_add_data
+from utils import alchemy_encoder
 
 
 async def get_records(request: web.Request) -> web.Response:
@@ -37,27 +37,16 @@ async def get_record_view(request: web.Request) -> web.Response:
 
 
 async def add_record_view(request: web.Request) -> web.Response:
-    data = await request.json()
+    req_data = await request.json()
     db = request.app['db']
-    try:
-        class_id = int(data['class_id'])
-        name = data['name']
-        props = dict(data['props'])
-        geom = data['geom']
-
-    except (KeyError, TypeError, ValueError) as e:
-        raise web.HTTPBadRequest(
-            text='You have not specified {} value'.format(e)) from e
+    data = build_add_data(req_data)
 
     async with db.acquire() as conn:
         try:
             result = await add_record(
                 connection=conn,
-                class_id=class_id,
-                name=name,
-                props=props,
-                geom=geom
-            )
+                data=data)
+
         except RecordNotFound as e:
             raise web.HTTPNotFound(text=str(e))
 
@@ -73,7 +62,7 @@ async def update_record_view(request: web.Request) -> web.Response:
     record_id = request.match_info['record_id']
     req_data = await request.json()
     db = request.app['db']
-    data = await build_data(req_data)
+    data = build_update_data(req_data)
 
     async with db.acquire() as conn:
         try:

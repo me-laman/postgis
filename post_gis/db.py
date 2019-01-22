@@ -60,18 +60,10 @@ async def delete_record(connection: SAConnection, record_id: int) -> RowProxy:
     return result
 
 
-async def add_record(connection: SAConnection,
-                     class_id: int,
-                     name: str,
-                     props: Dict,
-                     geom: str):
+async def add_record(connection: SAConnection, data):
 
     result = await connection.execute(
-        gis_polygon.insert().values(
-            class_id=class_id,
-            name=name,
-            props=props,
-            geom=geom)
+        gis_polygon.insert().values(data)
     )
 
     record = await result.fetchone()
