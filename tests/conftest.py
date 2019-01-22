@@ -1,5 +1,4 @@
 import pytest
-from aiohttp.pytest_plugin import aiohttp_client, loop
 from main import init_app
 from settings import BASE_DIR, get_config
 from init_db import (
@@ -19,7 +18,7 @@ async def cli(loop, aiohttp_client, db):
     return await aiohttp_client(app)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def db():
     test_config = get_config(['-c', TEST_CONFIG_PATH.as_posix()])
 
