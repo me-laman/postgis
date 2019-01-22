@@ -54,7 +54,13 @@ def build_data(class_id, name, props, geom, from_coordinates):
 
 
 def build_geom(geom_list, from_coordinates=None):
-    polygon = Polygon(geom_list)
+
+    try:
+        polygon = Polygon(geom_list)
+    except AssertionError as e:
+        raise web.HTTPBadRequest(
+            text='You have not specified Polygon value') from e
+
     if not from_coordinates:
         p = polygon
     else:

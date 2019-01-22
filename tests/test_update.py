@@ -82,3 +82,16 @@ async def test_index_update_record_not_valid_props(cli, sample_data_fixture):
     assert response.status == 400
     text = await response.text()
     assert text == "You have not specified dictionary update sequence element #0 has length 1; 2 is required value"
+
+
+async def test_index_update_geom_not_valid(cli, sample_data_fixture):
+    id = 1
+    geom = 'non valid'
+
+    response = await cli.put(f'/polygon/{id}',
+                             json={
+                                 "geom": geom,
+                             })
+    assert response.status == 400
+    text = await response.text()
+    assert text == "You have not specified Polygon value"
